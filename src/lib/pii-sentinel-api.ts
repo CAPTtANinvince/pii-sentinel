@@ -48,6 +48,18 @@ function friendlyHttpError(status: number): string {
   return `The scan service returned an error (status ${status}).`;
 }
 
+async function errorFromResponse(res: Response): Promise<Error> {
+  try {
+    const body = (await res.json()) as { error?: { message?: unknown } };
+    if (typeof body?.error?.message === "string" && body.error.message) {
+      return new Error(body.error.message);
+    }
+  } catch {
+    // Fall back to a status-based message below.
+  }
+  return new Error(friendlyHttpError(res.status));
+}
+
 async function parseResponseBody(res: Response): Promise<unknown> {
   try {
     return await res.json();
@@ -103,7 +115,7 @@ async function requestScan(body: BodyInit, headers?: HeadersInit): Promise<ScanR
       "Could not reach the scan service. Check your connection and the backend deployment.",
     );
   }
-  if (!res.ok) throw new Error(friendlyHttpError(res.status));
+  if (!res.ok) throw await errorFromResponse(res);
   return normalizeScanResponse(await parseResponseBody(res));
 }
 
@@ -161,7 +173,7 @@ export async function redactInput(request: RedactRequest): Promise<RedactRespons
       "Could not reach the redaction service. Check your connection and the backend deployment.",
     );
   }
-  if (!res.ok) throw new Error(friendlyHttpError(res.status));
+  if (!res.ok) throw await errorFromResponse(res);
 
   const contentType = res.headers.get("content-type") ?? "";
   const response: RedactResponse = {
