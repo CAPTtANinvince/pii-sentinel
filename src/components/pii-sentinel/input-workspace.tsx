@@ -85,7 +85,7 @@ export function InputWorkspace(props: InputWorkspaceProps) {
       return;
     }
     if (candidate.size > MAX_FILE_BYTES) {
-      setFileError("File is larger than 15 MB. Choose a smaller file.");
+      setFileError("File is larger than 4 MB. Choose a smaller file.");
       return;
     }
     setFileError(null);

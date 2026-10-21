@@ -103,7 +103,7 @@ export const SUPPORTED_EXTENSIONS = [
 ] as const;
 
 /** Client-side sanity limit only; authoritative validation happens on the backend. */
-export const MAX_FILE_BYTES = 15 * 1024 * 1024;
+export const MAX_FILE_BYTES = 4 * 1024 * 1024;
 
 export function getFileExtension(fileName: string): string {
   const idx = fileName.lastIndexOf(".");
